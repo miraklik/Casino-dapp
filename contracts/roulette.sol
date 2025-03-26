@@ -182,7 +182,11 @@ contract Roulette is VRFConsumerBaseV2, Ownable {
         delete bets[requestId];
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7b8004e (add slot machine)
 =======
 }
 >>>>>>> 7b8004e (add slot machine)
