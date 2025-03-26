@@ -11,4 +11,7 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat ignition deploy ./ignition/modules/Lock.ts
 ```
+<<<<<<< HEAD
 # web3-Roulette
+=======
+>>>>>>> 7b8004e (add slot machine)
