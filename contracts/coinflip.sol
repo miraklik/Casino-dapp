@@ -6,60 +6,63 @@ import "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.s
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./VipNFT.sol";
 
-
 /**
- * @title SlotMachine Smart Contract
- * @notice A decentralized slot machine game with VIP NFT integration and Chainlink VRF random number generation.
- * @dev This contract allows users to place bets, receive winnings, and benefit from VIP NFT perks. 
+ * @title Coinflip Smart Contract
+ * @notice A decentralized coinflip game with VIP NFT integration and Chainlink VRF random number generation.
+ * @dev This contract allows users to place bets, receive winnings, and benefit from VIP NFT perks.
  */
-contract SlotMachine is VRFConsumerBaseV2, Ownable {
-    VRFCoordinatorV2Interface public COORDINATOR;
+contract Coinflip is VRFConsumerBaseV2, Ownable {
+    VRFCoordinatorV2Interface private immutable COODRINATOR;
     VipNFT public immutable vipNft;
 
-    // Custom error messages for gas optimization
-    error BetTooLow();
-    error BetTooHigh();
-    error CashBackFailed();
-    error TransferFailed();
+    //Custom error messages
+    error BetExceedsMaximum();
+    error BetIsBelowMinimum();
+    error CashBackTransferFailed();
     error WithdrawFailed();
     error InsufficientBank();
-    error NotEnoughFundsInHouseBank();
-    error JackpotPayoutFailed();
+    error NotEnoughFundsInBank();
+    error InvalidGuess();
+    error PayoutFailed();
+    error OnlyCoordinatorAllowed();
+    error OnlyVRFCoordinatorCanFulfill();
     error MinimumBetMustBeLessThanMaximumBet();
 
     // Chainlink VRF parameters
     uint64 private immutable subscriptionId;
-    address private immutable vrfCoordinator = 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625;
-    bytes32 private immutable keyHash; //Insert your KEY_HASH 
+    address private immutable vrfCoordinator = 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625; 
+    bytes32 private immutable keyHash;
     uint32 private constant callbackGasLimit = 200000;
     uint16 private constant requestConfirmations = 3;
     uint32 private constant numWords = 1;
 
     // Betting parameters
-    uint256 public minBet = 0.0001 ether;
+    uint256 public minBet = 0.001 ether;
     uint256 public maxBet = 5 ether;
     uint256 public houseBank;
     uint256 public houseFee = 5;
-    uint256 public jackpotPool;
 
     struct Game {
         address player;
         uint256 bet;
+        uint8 guess;
+        uint timestamp;
     }
 
-    mapping(uint256 => Game) public games;
+    mapping (uint256 => Game) private games;
 
     // Events
-    event SlotPlayed(address indexed player, uint256 amount, uint8[3] result, uint256 payout);
-    event JackpotWon(address indexed winner, uint256 amount);
+    event BetPlaced(uint256 requestId, address indexed player, uint256 amount);
+    event GameResult(uint256 requestId, address indexed player, uint256 amount, uint8 winningNumber, bool win);
     event HouseBankUpdated(uint256 newBalance);
 
-    /**
-     * @notice Initializes the Roulette contract with Chainlink VRF and VIP NFT contract.
+    /** 
+     * @notice Initializes the Coinflip contract with Chainlink VRF and VIP NFT contract.
      * @param _subscriptionId Chainlink VRF subscription ID.
+     * @param _vipNFT Address of the VIP NFT contract.
      */
     constructor(uint64 _subscriptionId, address _vipNFT) VRFConsumerBaseV2(vrfCoordinator) Ownable(msg.sender) {
-        COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+        COODRINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         subscriptionId = _subscriptionId;
         vipNft = VipNFT(_vipNFT);
     }
@@ -101,33 +104,34 @@ contract SlotMachine is VRFConsumerBaseV2, Ownable {
     }
 
     /**
-    * @notice Plays the slot machine game using msg.value as the bet.
-    */
-     function playSlot() external payable {
+     * @notice Places a bet in the Coinflip game.
+     * @dev Checks if the bet amount is within the allowed range and sends the bet amount to the Chainlink VRF coordinator.
+     */
+    function placeBet(uint8 guess) external payable {
+        require(guess == 0 || guess == 1, InvalidGuess());
+
         (uint256 adjustedMaxBet, uint256 adjustedHouseFee, uint256 cashback, ) = getVipBenefits(msg.sender);
 
-        if (msg.value < minBet) revert BetTooLow();
-        if (msg.value > adjustedMaxBet) revert BetTooHigh();
+        require(msg.value >= minBet, BetIsBelowMinimum());
+        require(msg.value <= adjustedMaxBet, BetExceedsMaximum());
 
-        uint256 jackpotPart = (msg.value * 1) / 100;
-        jackpotPool += jackpotPart;
+        uint256 requestId = COODRINATOR.requestRandomWords(
+            keyHash, subscriptionId, requestConfirmations, callbackGasLimit, numWords
+        );
 
-        uint256 feeAmount = (msg.value * adjustedHouseFee) / 100;
-        houseBank += feeAmount;
-        uint256 betAmount = msg.value - feeAmount - jackpotPart;
+        uint256 houseFeeAmount = (msg.value * adjustedHouseFee) / 100;
+        houseBank += houseFeeAmount;
+        uint256 betAmount = msg.value - houseFeeAmount;
 
         if (cashback > 0) {
             uint256 cashbackAmount = (msg.value * cashback) / 100;
             (bool success, ) = payable(msg.sender).call{value: cashbackAmount}("");
-            if (!success) revert CashBackFailed();
+            require(success, CashBackTransferFailed());
         }
 
-        uint256 requestId = COORDINATOR.requestRandomWords(
-            keyHash, subscriptionId, requestConfirmations, callbackGasLimit, numWords
-        );
+        games[requestId] = Game(msg.sender, betAmount, guess, block.timestamp);
 
-
-        games[requestId] = Game(msg.sender, betAmount);
+        emit BetPlaced(requestId, msg.sender, betAmount);
         emit HouseBankUpdated(houseBank);
     }
 
@@ -136,61 +140,31 @@ contract SlotMachine is VRFConsumerBaseV2, Ownable {
      * @param requestId The request ID.
      * @param randomWords The random number generated by Chainlink VRF.
      */
-    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+   function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+        require(msg.sender == address(COODRINATOR), OnlyCoordinatorAllowed());
+
         Game memory game = games[requestId];
         delete games[requestId];
 
-        uint8[3] memory slots;
-        for (uint8 i = 0; i < 3; i++) {
-            slots[i] = uint8((randomWords[i] % 6) + 1); // Symbols: 1 to 6
-        }
+        uint8 result = uint8(randomWords[0] % 2);
+        bool win = (result == game.guess); 
 
         (, , , uint256 winBonus) = getVipBenefits(game.player);
 
-        uint256 payout = calculatePayout(slots, game.bet, winBonus);
+        uint256 payout = 0;
+        if (win) {
+            payout = game.bet * (200 + winBonus) / 100;
 
-        uint256 jackpotChance = randomWords[0] % 1000;
-        if (jackpotChance == 777 && jackpotPool > 0) {
-            (bool success, ) = payable(game.player).call{value: jackpotPool}("");
-            require(success, JackpotPayoutFailed());
-            emit JackpotWon(game.player, jackpotPool);
-            jackpotPool = 0;
-        }
-
-        if (payout > 0) {
-            if (payout > houseBank) revert NotEnoughFundsInHouseBank();
+            require(payout <= houseBank, NotEnoughFundsInBank());
 
             (bool success, ) = payable(game.player).call{value: payout}("");
-            if (!success) revert TransferFailed();
+            require(success, PayoutFailed());
 
             houseBank -= payout;
         }
 
-        emit SlotPlayed(game.player, game.bet, slots, payout);
-        emit JackpotWon(game.player, game.bet);
+        emit GameResult(requestId, game.player, game.bet, result, win);
         emit HouseBankUpdated(houseBank);
-    }
-
-    /**
-     * @notice Calculates the payout based on the symbols in the slots.
-     * @param slots The symbols in the slots.
-     * @param bet The amount of ETH bet.
-     * @return The payout amount.
-     */
-    function calculatePayout(uint8[3] memory slots, uint256 bet, uint256 winBonus) internal pure returns (uint256) {
-        uint256 multiplier = 0;
-
-        if (slots[0] == slots[1] && slots[1] == slots[2]) {
-            multiplier = 10;
-        } else if (slots[0] == slots[1] || slots[1] == slots[2] || slots[0] == slots[2]) {
-            multiplier = 2;
-        }
-
-        if (multiplier == 0) return 0;
-
-        uint256 basePayout = bet * multiplier;
-        uint256 bonus = (basePayout * winBonus) / 100;
-        return basePayout + bonus;
     }
 
 
@@ -218,4 +192,3 @@ contract SlotMachine is VRFConsumerBaseV2, Ownable {
         emit HouseBankUpdated(houseBank);
     }
 }
-
