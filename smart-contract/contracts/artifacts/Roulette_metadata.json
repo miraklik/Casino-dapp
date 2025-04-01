@@ -1,0 +1,558 @@
+{
+	"compiler": {
+		"version": "0.8.29+commit.ab55807c"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "_subscriptionId",
+						"type": "uint64"
+					},
+					{
+						"internalType": "address",
+						"name": "_vipNFT",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "BetExceedsMaximum",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "BetIsBelowMinimum",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "CannotBetOnBothEVENAndODD",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "CannotBetOnColorAndGreenSimultaneously",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "CashBackTransferFailed",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidBetLimits",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidNum",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotEnoughFundsInHouseBank",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "have",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "want",
+						"type": "address"
+					}
+				],
+				"name": "OnlyCoordinatorCanFulfill",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "OwnableInvalidOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "OwnableUnauthorizedAccount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "TransferFailed",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "WithdrawFailed",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "requestId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "BetPlaced",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "requestId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "winningNumber",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "win",
+						"type": "bool"
+					}
+				],
+				"name": "GameResult",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newBalance",
+						"type": "uint256"
+					}
+				],
+				"name": "HouseBankUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "bets",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnNumber",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint8",
+						"name": "number",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnColor",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "color",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnGreen",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnEven",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnOdd",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "getVipBenefits",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "houseBank",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "houseFee",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "maxBet",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "minBet",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "betOnNumber",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint8",
+						"name": "number",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnColor",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "color",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnGreen",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnEven",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "betOnOdd",
+						"type": "bool"
+					}
+				],
+				"name": "placeMultiBet",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "requestId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "randomWords",
+						"type": "uint256[]"
+					}
+				],
+				"name": "rawFulfillRandomWords",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "vipNft",
+				"outputs": [
+					{
+						"internalType": "contract VipNFT",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"details": "This contract allows users to place bets, receive winnings, and benefit from VIP NFT perks.",
+			"errors": {
+				"OwnableInvalidOwner(address)": [
+					{
+						"details": "The owner is not a valid owner account. (eg. `address(0)`)"
+					}
+				],
+				"OwnableUnauthorizedAccount(address)": [
+					{
+						"details": "The caller account is not authorized to perform an operation."
+					}
+				]
+			},
+			"kind": "dev",
+			"methods": {
+				"constructor": {
+					"params": {
+						"_subscriptionId": "Chainlink VRF subscription ID.",
+						"_vipNFT": "Address of the VIP NFT contract."
+					}
+				},
+				"getVipBenefits(address)": {
+					"params": {
+						"player": "The address of the player."
+					},
+					"returns": {
+						"_0": "adjustedMaxBet Maximum bet limit based on VIP status.",
+						"_1": "adjustedHouseFee House fee percentage based on VIP status.",
+						"_2": "cashback Cashback percentage for the player.",
+						"_3": "winBonus Win multiplier bonus."
+					}
+				},
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"placeMultiBet(bool,uint8,bool,bool,bool,bool,bool)": {
+					"params": {
+						"betOnColor": "Whether the player is betting on color.",
+						"betOnEven": "Whether the player is betting on even numbers.",
+						"betOnGreen": "Whether the player is betting on green (0).",
+						"betOnNumber": "Whether the player is betting on a specific number.",
+						"betOnOdd": "Whether the player is betting on odd numbers.",
+						"color": "The chosen color (true = red, false = black).",
+						"number": "The number chosen by the player (0-36)."
+					}
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				}
+			},
+			"title": "Roulette Smart Contract",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"constructor": {
+					"notice": "Initializes the Roulette contract with Chainlink VRF and VIP NFT contract."
+				},
+				"getVipBenefits(address)": {
+					"notice": "Retrieves VIP benefits for a given player."
+				},
+				"placeMultiBet(bool,uint8,bool,bool,bool,bool,bool)": {
+					"notice": "Allows a player to place multiple bets in a single transaction."
+				}
+			},
+			"notice": "A decentralized roulette game with VIP NFT integration and Chainlink VRF random number generation.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/roulette_flattened.sol": "Roulette"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/roulette_flattened.sol": {
+			"keccak256": "0xba323578dac6dcb61031635b0ef87d55331aeff9a433b952cbb6b6ee4c231c1a",
+			"urls": [
+				"bzz-raw://c847637667fcd1f1f6ac57a07ad07d00d88a6ce65a9da7b142a696ee450627d7",
+				"dweb:/ipfs/Qmcds6Yb2BHCPsGMz9nqp1HapoqRiFFGdoj2ukx9Zqew6i"
+			]
+		}
+	},
+	"version": 1
+}

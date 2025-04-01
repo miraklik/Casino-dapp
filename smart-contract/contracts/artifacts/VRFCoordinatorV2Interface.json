@@ -1,0 +1,279 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"goerli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"gasEstimates": null,
+		"methodIdentifiers": {
+			"acceptSubscriptionOwnerTransfer(uint64)": "82359740",
+			"addConsumer(uint64,address)": "7341c10c",
+			"cancelSubscription(uint64,address)": "d7ae1d30",
+			"createSubscription()": "a21a23e4",
+			"getRequestConfig()": "00012291",
+			"getSubscription(uint64)": "a47c7696",
+			"pendingRequestExists(uint64)": "e82ad7d4",
+			"removeConsumer(uint64,address)": "9f87fad7",
+			"requestRandomWords(bytes32,uint64,uint16,uint32,uint32)": "5d3b1d30",
+			"requestSubscriptionOwnerTransfer(uint64,address)": "04c357cb"
+		}
+	},
+	"abi": [
+		{
+			"inputs": [
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				}
+			],
+			"name": "acceptSubscriptionOwnerTransfer",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				},
+				{
+					"internalType": "address",
+					"name": "consumer",
+					"type": "address"
+				}
+			],
+			"name": "addConsumer",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				},
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				}
+			],
+			"name": "cancelSubscription",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "createSubscription",
+			"outputs": [
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getRequestConfig",
+			"outputs": [
+				{
+					"internalType": "uint16",
+					"name": "",
+					"type": "uint16"
+				},
+				{
+					"internalType": "uint32",
+					"name": "",
+					"type": "uint32"
+				},
+				{
+					"internalType": "bytes32[]",
+					"name": "",
+					"type": "bytes32[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				}
+			],
+			"name": "getSubscription",
+			"outputs": [
+				{
+					"internalType": "uint96",
+					"name": "balance",
+					"type": "uint96"
+				},
+				{
+					"internalType": "uint64",
+					"name": "reqCount",
+					"type": "uint64"
+				},
+				{
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"internalType": "address[]",
+					"name": "consumers",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				}
+			],
+			"name": "pendingRequestExists",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				},
+				{
+					"internalType": "address",
+					"name": "consumer",
+					"type": "address"
+				}
+			],
+			"name": "removeConsumer",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bytes32",
+					"name": "keyHash",
+					"type": "bytes32"
+				},
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				},
+				{
+					"internalType": "uint16",
+					"name": "minimumRequestConfirmations",
+					"type": "uint16"
+				},
+				{
+					"internalType": "uint32",
+					"name": "callbackGasLimit",
+					"type": "uint32"
+				},
+				{
+					"internalType": "uint32",
+					"name": "numWords",
+					"type": "uint32"
+				}
+			],
+			"name": "requestRandomWords",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "requestId",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint64",
+					"name": "subId",
+					"type": "uint64"
+				},
+				{
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "requestSubscriptionOwnerTransfer",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]
+}
