@@ -21,9 +21,11 @@ contract Roulette is VRFConsumerBaseV2, Ownable {
     error BetIsBelowMinimum();
     error BetExceedsMaximum();
     error CannotBetOnBothEVENAndODD();
+    error MinimumBetMustBeLessThanMaximumBet();
     error CannotBetOnColorAndGreenSimultaneously();
     error NotEnoughFundsInHouseBank();
     error CashBackTransferFailed();
+    error InsufficientBank();
     error TransferFailed();
     error WithdrawFailed();
 
@@ -180,6 +182,30 @@ contract Roulette is VRFConsumerBaseV2, Ownable {
 
         emit GameResult(requestId, bet.player, bet.amount, winningNumber, win);
         delete bets[requestId];
+    }
+
+    /**
+     * @notice Sets the minimum and maximum bet limits.
+     * @param _min The minimum bet limit.
+     * @param _max The maximum bet limit.
+     */
+    function SetLimits(uint256 _min, uint256 _max) external onlyOwner {
+        require(_min < _max, MinimumBetMustBeLessThanMaximumBet());
+        minBet = _min;
+        maxBet = _max;
+    }
+
+    function withdraw(address payable _to, uint256 amount) external onlyOwner {
+        require(amount <= houseBank, InsufficientBank());
+        houseBank -= amount;
+        (bool success, ) = _to.call{value: amount}("");
+        require(success, WithdrawFailed());
+        emit HouseBankUpdated(houseBank);
+    }
+
+    receive() external payable {
+        houseBank += msg.value;
+        emit HouseBankUpdated(houseBank);
     }
 }
 
