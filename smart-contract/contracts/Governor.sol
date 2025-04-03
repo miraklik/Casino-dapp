@@ -11,14 +11,17 @@ import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 
 contract Votes is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl {
+    uint48 public constant INITIAL_VOTING_DELAY = 1 days;
+    uint32 public constant INITIAL_VOTING_PERIOD = 7 days;
+    uint256 public constant INITIAL_PROPOSAL_THRESHOLD = 0;
+
     constructor(IVotes _token, TimelockController _timelock)
         Governor("Votes")
-        GovernorSettings(7200 /* 1 day */, 50400 /* 1 week */, 0)
+        GovernorSettings(INITIAL_VOTING_DELAY, INITIAL_VOTING_PERIOD, INITIAL_PROPOSAL_THRESHOLD)
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(4)
         GovernorTimelockControl(_timelock)
     {}
-
 
     function votingDelay()
         public
