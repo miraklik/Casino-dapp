@@ -8,6 +8,8 @@ import {ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Vo
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Token is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, Ownable {
+    event TokenMinted(address indexed to, uint256 amount);
+
     constructor() ERC20("LUCKY", "LCK") ERC20Permit("LUCKY") Ownable(msg.sender) {
         _mint(msg.sender, 1000000 * 10 ** decimals());
     }
@@ -21,6 +23,7 @@ contract Token is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, Ownable {
         override(ERC20, ERC20Votes)
     {
         super._update(from, to, value);
+        emit TokenMinted(to, value);
     }
 
     function nonces(address owner)

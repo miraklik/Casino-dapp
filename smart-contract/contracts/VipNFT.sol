@@ -16,6 +16,8 @@ contract VipNFT is ERC721Enumerable, Ownable {
     mapping (uint256 => VipLevel) public vipLevels;
     mapping (address => bool) public hasVip;
 
+    event VipMinted(address indexed to, uint256 tokenId, VipLevel level);
+
     constructor() ERC721("VIP STATUS", "VIP") Ownable(msg.sender) {}
 
     /**
@@ -29,6 +31,8 @@ contract VipNFT is ERC721Enumerable, Ownable {
         _safeMint(to, tokenId);
         vipLevels[tokenId] = level;
         hasVip[to] = true;
+
+        emit VipMinted(to, tokenId, level);
     }
 
     /**
